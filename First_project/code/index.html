@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Weather Info</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Weather Information</h1>
+
+    <div class="input-box">
+      <input type="text" id="cityInput" placeholder="Enter city name" />
+      <button class="som" onclick="fetchWeatherData()">Get Weather</button>
+    </div>
+
+    <div class="weather-box" id="weatherBox">
+      <p>Temperature: <span id="temperature">--</span>°C</p>
+      <p>Humidity: <span id="humidity">--</span>%</p>
+      <p>Wind Speed: <span id="windspeed">--</span> km/h</p>
+    </div>
+  </div>
+
+  <script>
+    async function fetchWeatherData() {
+      const city = document.getElementById("cityInput").value || "London";
+      const apiKey = "67adaae1d939449298852258250404";
+      const url = `http://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}&aqi=yes`;
+
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        const temperature = data.current.temp_c;
+        const humidity = data.current.humidity;
+        const windspeed = data.current.wind_kph;
+        const condition = data.current.condition.text.toLowerCase();
+
+        document.getElementById("temperature").textContent = temperature;
+        document.getElementById("humidity").textContent = humidity;
+        document.getElementById("windspeed").textContent = windspeed;
+
+        const weatherBox = document.getElementById("weatherBox");
+        weatherBox.className = "weather-box"; 
+
+        if (temperature >= 35) {
+          weatherBox.classList.add("hot");
+        }
+        if (condition.includes("rain")) {
+          weatherBox.classList.add("rain");
+        }
+        if (windspeed >= 30) {
+          weatherBox.classList.add("wind");
+        }
+      } catch (error) {
+        alert("Failed to fetch weather data. Please try again.");
+        console.error(error);
+      }
+    }
+
+    window.addEventListener('resize', () => {
+      const container = document.querySelector('.container');
+      container.style.padding = window.innerWidth < 500 ? '10px' : '30px';
+    });
+  </script>
+</body>
+</html>
